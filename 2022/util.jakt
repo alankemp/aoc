@@ -1,0 +1,36 @@
+
+function sort(mut values: [i64]) {
+    mut i = 0
+    while i < values.size() as! i64 - 1 {
+        mut j = 0
+        while j < (values.size() as! i64) - i - 1 {
+            if values[j] > values[j + 1] {
+                let tmp = values[j]
+                values[j] = values[j + 1]
+                values[j + 1] = tmp
+            }
+            ++j
+        }
+        ++i
+    }
+}
+
+function read_file_to_list(file_path: String) throws -> [String] {
+
+    mut lines: [String] = []
+
+    mut file = File::open_for_reading(file_path)
+    mut builder = StringBuilder::create()
+    for b in file.read_all() {
+        if (b == '\n' as! u8) {
+            lines.push(builder.to_string())
+            builder.clear()
+        } else {
+            builder.append(b)
+        }
+    }
+
+    lines.push(builder.to_string())
+
+    return lines
+}

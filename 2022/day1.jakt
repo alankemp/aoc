@@ -1,0 +1,29 @@
+
+import util
+
+function main() {
+    let lines = util::read_file_to_list(file_path: "day1_input.txt")
+
+    mut sums: [i64] = []
+    mut items: [i64] = []
+
+    for line in lines {
+        if (line.length() == 0) {
+            mut sum = 0;
+            for item in items {
+                sum += item;
+            }
+            
+            sums.push(sum);
+            items = []
+        } else {
+            items.push(line.to_int()! as! i64)
+        }
+    }
+
+    util::sort(values: sums);
+
+    println("Most: {}", sums[sums.size()-1])
+
+    println("Top3: {}", sums[sums.size()-1] + sums[sums.size()-2] + sums[sums.size()-3])
+}
