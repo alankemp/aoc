@@ -1,0 +1,110 @@
+import util
+
+enum GameResult {
+    Win,
+    Draw,
+    Lose,
+    Invalid
+}
+
+function play(them: String, us: String) -> GameResult {
+    return match them {
+        "A" => match us {
+            "X" => GameResult::Draw
+            "Y" => GameResult::Win
+            "Z" => GameResult::Lose
+            else => GameResult::Invalid
+        }
+        "B" => match us {
+            "X" => GameResult::Lose
+            "Y" => GameResult::Draw
+            "Z" => GameResult::Win
+            else => GameResult::Invalid
+        }
+        "C" => match us {
+            "X" => GameResult::Win
+            "Y" => GameResult::Lose
+            "Z" => GameResult::Draw
+            else => GameResult::Invalid
+        }
+        else => GameResult::Invalid
+    }
+}
+
+function choose_shape(them: String, result: String) -> String {
+    return match them {
+        "A" => match result {
+            "Z" => "Y"
+            "X" => "Z"
+            "Y" => "X"
+            else => "INVALID"
+        }
+        "B" => match result {
+            "Z" => "Z"
+            "X" => "X"
+            "Y" => "Y"
+            else  => "INVALID"
+        }
+        "C" => match result {
+            "Z" => "X"
+            "X" => "Y"
+            "Y" => "Z"
+            else => "INVALID"
+        }
+        else => "INVALID"
+    }
+}
+
+function my_shape_score(shape: String) -> i64 {
+    return match shape {
+        "X" => 1
+        "Y" => 2
+        "Z" => 3
+        else => 0
+    }
+}
+
+function game_result_score(result: GameResult) -> i64 {
+    return match result {
+        GameResult::Win => 6
+        GameResult::Draw => 3
+        GameResult::Lose => 0
+        GameResult::Invalid => 0
+    }
+}
+
+function main() {
+    let lines = util::read_file_to_list(file_path: "day2_input.txt")
+
+    // Part 1
+    mut total_score = 0
+    for line in lines {
+        let shapes = line.split(' ')
+        let result = play(them: shapes[0], us: shapes[1])
+
+        let score = my_shape_score(shape: shapes[1]) + game_result_score(result: result)
+
+        //println("{} {} {}", shapes, result, score)
+
+        total_score += score
+    }
+
+    println("Part 1 - total score {}", total_score)
+
+
+    // Part 2
+    total_score = 0
+    for line in lines {
+        let shapes = line.split(' ')
+        let us = choose_shape(them: shapes[0], result: shapes[1]);
+
+        let result = play(them: shapes[0], us: us)
+        let score = my_shape_score(shape: us) + game_result_score(result: result)
+
+        //println("{} {} {}", shapes, result, score)
+
+        total_score += score
+    }
+
+    println("Part 2 - total score {}", total_score)
+}
