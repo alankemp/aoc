@@ -34,3 +34,40 @@ function read_file_to_list(file_path: String) throws -> [String] {
 
     return lines
 }
+
+function split_string_to_chars_offset(str: String, start: usize, end: usize) throws -> [u8] {
+    mut pos: usize = start;
+    mut result: [u8] = [];
+
+    while pos < end {
+        let ch = str.byte_at(pos) as! u8
+        result.push(ch)
+        pos++;
+    }
+
+    return result
+}
+
+function split_string_to_chars(str: String) throws -> [u8] {
+    return split_string_to_chars_offset(str: str, start: 0, end: str.length())
+}
+
+function find_common2<T>(lhs: [T], rhs: [T]) -> T {
+    for ch in lhs {
+        if rhs.contains(ch) {
+            return ch
+        }
+    }
+
+    return 0
+}
+
+function find_common3<T>(a: [T], b: [T], c: [T]) -> T {
+    for ch in a {
+        if b.contains(ch) and c.contains(ch) {
+            return ch
+        }
+    }
+
+    return 0
+}

@@ -1,0 +1,72 @@
+
+import util
+
+// function letter_to_int(letter: String) -> i8 {
+
+
+
+// }
+
+// function extract_bag(bag: String) -> [i8] {
+//     mut result: [i8] = [];
+
+
+// }
+
+// Maps ascii characters to:
+// a-z -> 1-26
+// A-Z -> 27->52
+function convert_chars_to_letter_indices(chars: [u8]) throws -> [u8] {
+    mut result: [u8] = [];
+
+    for ch in chars {
+        if ch >= b'A' and ch <= b'Z' {
+            result.push(ch-b'A'+27)
+        }
+        if ch >= b'a' and ch <= b'z' {
+            result.push(ch-b'a'+1)
+        }
+    }
+    return result
+}
+
+function main() {
+    //let lines = util::read_file_to_list(file_path: "day3_test.txt")
+    let lines = util::read_file_to_list(file_path: "day3_input.txt")
+
+    mut sum = 0;
+
+    for line in lines {
+        let first = util::split_string_to_chars_offset(str: line, start: 0, end: line.length()/2);
+        let first_letters = convert_chars_to_letter_indices(chars: first)
+        
+        let second = util::split_string_to_chars_offset(str: line, start: line.length()/2, end: line.length());
+        let second_letters = convert_chars_to_letter_indices(chars: second)
+
+        let ch = util::find_common2(lhs: first_letters, rhs: second_letters)
+
+        sum += ch as! i64;
+    }
+
+    println("Part 1 sum={}", sum)
+
+
+    sum = 0;
+    mut offset: usize = 0;
+    while offset < lines.size() {
+        let line1 = util::split_string_to_chars(str: lines[offset+0]);
+        let line1_letters = convert_chars_to_letter_indices(chars: line1)
+        let line2 = util::split_string_to_chars(str: lines[offset+1]);
+        let line2_letters = convert_chars_to_letter_indices(chars: line2)
+        let line3 = util::split_string_to_chars(str: lines[offset+2]);
+        let line3_letters = convert_chars_to_letter_indices(chars: line3)
+        offset += 3;
+
+        let ch = util::find_common3(a: line1_letters, b: line2_letters, c: line3_letters)
+        sum += ch as! i64;
+    }
+
+    println("Part 2 sum={}", sum)
+
+
+}
