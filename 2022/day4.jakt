@@ -1,0 +1,38 @@
+
+import util
+
+function within(value: i64, min: i64, max: i64) -> bool {
+    return value >= min and value <= max
+}
+
+function main() {
+    //let lines = util::read_file_to_list(file_path: "day4_test.txt")
+    let lines = util::read_file_to_list(file_path: "day4_input.txt")
+
+    mut overlaps = 0;
+
+    for line in lines {
+
+        // "2-4,6-8"
+
+        let parts = line.split(',')
+
+        let first = parts[0].split('-')
+        let first_start = first[0].to_int()! as! i64
+        let first_end = first[1].to_int()! as! i64
+
+        let second = parts[1].split('-')
+        let second_start = second[0].to_int()! as! i64
+        let second_end = second[1].to_int()! as! i64
+
+        //println("{} {} {}-{} {}-{}", line, parts, first_start, first_end, second_start, second_end)
+
+        if (within(value: first_start, min: second_start, max: second_end) or within(value: first_end, min: second_start, max: second_end) or
+        within(value: second_start, min: first_start, max: first_end) or within(value: second_end, min: first_start, max: first_end)) {
+            //println("overlap!")
+            overlaps++;
+        }
+    }
+
+    println("overlaps = {}", overlaps)
+}

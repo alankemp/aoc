@@ -1,0 +1,60 @@
+import util
+
+function main() {
+    //let lines = util::read_file_to_list(file_path: "day5_test.txt")
+    let lines = util::read_file_to_list(file_path: "day5_input.txt")
+
+    let num_columns = lines[0].to_int()! as! usize
+
+    mut columns: [[u8]] = []
+
+    mut i: usize = 0
+    while i < num_columns {
+        let chars = util::split_string_to_chars(str: lines[i + 1])
+        println("{} = {}", i, chars)
+
+        let col: [u8] = []
+        columns.push(col)
+
+        for ch in chars {
+            columns[i].push(ch)
+        }
+
+        i++
+    }
+    i++
+
+    while i < lines.size() {
+        let line = lines[i]
+        i++
+
+        let cmds = line.split(' ')
+
+        mut num_to_move = (cmds[1].to_int()! as! u8) //- b'A'
+        mut from = (cmds[3].to_int()! as! u8) //- b'A'
+        mut to = (cmds[5].to_int()! as! u8) //- b'A'
+
+        mut temp_stack: [u8] = []
+
+        while num_to_move > 0 {
+            num_to_move--
+            let crate = columns[from-1].pop()!
+            // day 1
+            //columns[to-1].push(crate)
+
+            // day 2
+            temp_stack.push(crate)
+        }
+
+        // day 2
+        while temp_stack.size() > 0 {
+            let crate = temp_stack.pop()!
+            columns[to-1].push(crate)
+        }
+    }
+
+    for c in columns {
+        println("{}", util::int_to_ascii(n: c.pop()!))
+    }
+
+}
