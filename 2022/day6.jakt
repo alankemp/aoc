@@ -1,0 +1,19 @@
+import util
+
+function main() {
+    //let lines = util::read_file_to_list(file_path: "day6_test.txt")
+    let lines = util::read_file_to_list(file_path: "day6_input.txt")
+
+    let chars = util::split_string_to_chars(str: lines[0]);
+
+    //let n:usize: = 4; // part 1
+    let n:usize = 14; // part 2
+
+    for i in 0..chars.size() {
+        if (util::find_unique_run(data:chars, start: i, count: n)) {
+            println("start at {}", i+n)
+            break
+        }
+        i++
+    }
+}

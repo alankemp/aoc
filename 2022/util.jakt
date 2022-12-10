@@ -72,6 +72,18 @@ function find_common3<T>(a: [T], b: [T], c: [T]) -> T {
     return 0
 }
 
+function find_unique_run(data: [u8], start: usize, count: usize) -> bool {
+    for i in 0..count {
+        for j in (i+1)..count {
+            println("i {}, j {}", i, j)
+
+            if (data[start+i] == data[start+j]) { return false }
+        }
+    }
+
+    return true
+}
+
 function int_to_ascii(n: u8) -> String {
     return match n {
         48 => "0",
