@@ -1,5 +1,5 @@
 
-function sort(mut values: [i64]) {
+function sort<T>(mut values: [T]) {
     mut i = 0
     while i < values.size() as! i64 - 1 {
         mut j = 0

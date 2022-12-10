@@ -1,0 +1,160 @@
+import util
+
+struct AocDirectory {
+    name: String,
+    dirs: [String:AocDirectory],
+    files: [String:u64],
+
+    function get_size(this) -> u64 {
+        mut size:u64 = 0;
+        for f in this.files {
+            size += f.1
+        }
+        for d in this.dirs {
+            size += d.1.get_size()
+        }
+
+        return size
+    }
+
+    function print(this, depth: usize) throws {
+        println("{}+{} ({})", String::repeated(character: ' ', count: depth), this.name, this.get_size())
+
+        for d in this.dirs {
+            d.1.print(depth+1)
+        }
+
+        for f in this.files {
+            println("{}  {} {}", String::repeated(character: ' ', count: depth), f.0, f.1)
+        }
+    }
+
+    function sum_children_under_n(this, threshold: u64) -> u64 {
+        mut sum: u64 = 0;
+
+        for d in this.dirs {
+            let size = d.1.get_size()
+            if (size < threshold) {
+                println("including {} size={}", d.0, size)
+                sum += size
+            }
+
+            sum += d.1.sum_children_under_n(threshold: threshold)
+        }
+
+        return sum
+    }
+
+    function collect_children_size_over_n(this, threshold: u64, mut children: [String:u64]) throws {
+        for d in this.dirs {
+            let size = d.1.get_size()
+            if (size >= threshold) {
+                println("including {} size={}", d.0, size)
+                children[d.0] = size
+            }
+
+            d.1.collect_children_size_over_n(threshold: threshold, children: children)
+        }
+    }
+}
+
+struct AocFS {
+    root: AocDirectory,
+    working_dir: [String]
+
+    function pwd(this) -> AocDirectory {
+        mut d = this.root
+        for i in 0..this.working_dir.size() {
+            d = d.dirs[this.working_dir[i]]
+        }
+        return d
+    }
+
+    function mkdir(mut this, mut name: String) throws {
+        mut d = this.pwd()
+
+        if (d.dirs.contains(key: name)) {
+            println("adding a dir that exists! {}", name)
+            name = name + "_1"
+        }
+
+        d.dirs[name] = AocDirectory(name: name, dirs: [:], files: [:])
+    }
+
+    function cd(mut this, path: String) throws {
+        if (path == "..") {
+            this.working_dir.pop()
+            return
+        }
+
+        this.working_dir.push(path)
+    }
+
+    function add_file(mut this, name: String, size: u64) throws {
+        mut d = this.pwd()
+        d.files[name] = size
+    }
+    
+    function print(this) throws {
+        this.root.print(0)
+    }
+}
+
+function main() {
+    //let lines = util::read_file_to_list(file_path: "day7_test.txt")
+    let lines = util::read_file_to_list(file_path: "day7_input.txt")
+
+    mut fs = AocFS(root: AocDirectory(name: "/", dirs: [:], files: [:]), working_dir: [])
+ 
+    for line in lines {
+        let tokens = line.split(' ')
+        match tokens[0] {
+            "$" => {
+                if (tokens[1] == "cd") {
+                    fs.cd(path: tokens[2])
+                }
+            },
+            "dir" => {
+                fs.mkdir(name: tokens[1])
+            },
+            else => {
+                let size = tokens[0].to_int()! as! u64
+                fs.add_file(name: tokens[1], size: size)
+            },
+        }
+    }
+
+    fs.print()
+
+    // part 1
+    // let sum = fs.root.sum_children_under_n(threshold: 100000)
+    // println("sum={}", sum)
+
+
+    // part 2
+    let total_size: u64 = 70000000;
+    let needed_size: u64 = 30000000;
+
+    let space_used: u64 = fs.root.get_size()
+    let space_available: u64 = total_size - space_used
+    let space_to_free: u64 = needed_size - space_available
+
+    println("used {}, available {}, to free {}", space_used, space_available, space_to_free)
+
+    mut children: [String:u64] = [:]
+    fs.root.collect_children_size_over_n(threshold: space_to_free, children: children)
+
+    mut best_name = ""
+    mut best_size: u64 = 999999999
+
+    for c in children {
+        if (c.1 < best_size) {
+            best_size = c.1
+            best_name = c.0
+        }
+    }
+
+    println("after freeing {} would have {} space", best_size, best_size+space_available)
+
+    println("name {} size {}", best_name, best_size)
+}
