@@ -52,6 +52,17 @@ function split_string_to_chars(str: String) throws -> [u8] {
     return split_string_to_chars_offset(str: str, start: 0, end: str.length())
 }
 
+function split_string_to_digits(str: String) throws -> [u8] {
+    let chars = split_string_to_chars_offset(str: str, start: 0, end: str.length())
+
+    mut digits:[u8] = []
+    for ch in chars {
+        digits.push(ch-b'0')
+    }
+
+    return digits
+}
+
 function find_common2<T>(lhs: [T], rhs: [T]) -> T {
     for ch in lhs {
         if rhs.contains(ch) {

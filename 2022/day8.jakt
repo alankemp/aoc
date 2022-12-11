@@ -1,0 +1,158 @@
+import util
+
+
+function square_visible_from_sides(grid: [[u8]], row: usize, col: usize) -> bool {
+
+    let height = grid[row][col]
+
+    //println("checking at {},{} height={}", row, col, height)
+
+    // left->right
+    mut blocked_left_right = false;
+    for row_pos in 0..col {
+        let test_height = grid[row][row_pos]
+        //println("test {},{} height={}", row, row_pos, test_height)
+        if (test_height >= height) { 
+            //println("L->R tree at {},{} is {} (taller than {})", row, row_pos, test_height, height)
+            blocked_left_right = true 
+        }
+    }
+
+    // right->left
+    mut blocked_right_left = false
+    for row_pos in (grid[0].size()-1)..col {
+        let test_height = grid[row][row_pos]
+        //println("test {},{} height={}", row, row_pos, test_height)
+        if (test_height >= height) { 
+            //println("R->L tree at {},{} is {} (taller than {})", row, row_pos, test_height, height)
+            blocked_right_left = true 
+        }
+    }
+
+    // top->bottom
+    mut blocked_top_bottom = false
+    for col_pos in 0..row {
+        let test_height = grid[col_pos][col]
+        //println("test {},{} height={}", col_pos, col, test_height)
+        if (test_height >= height) { 
+            //println("T->B tree at {},{} is {} (taller than {})", col_pos, col, test_height, height)
+            blocked_top_bottom = true
+        }
+    }
+
+    // right->left
+    mut blocked_bottom_top = false
+    for col_pos in (grid.size()-1)..row {
+        let test_height = grid[col_pos][col]
+        //println("test {},{} height={}", col_pos, col, test_height)
+        if (test_height >= height) { 
+            //println("R->L tree at {},{} is {} (taller than {})", col_pos, col, test_height, height)
+            blocked_bottom_top = true 
+        }
+    }
+
+    if (blocked_left_right == false) { return true }
+    if (blocked_right_left == false) { return true }
+    if (blocked_top_bottom == false) { return true }
+    if (blocked_bottom_top == false) { return true }
+    return false
+}
+
+function calculate_scenic_score(grid: [[u8]], row: usize, col: usize) -> usize {
+
+    let height = grid[row][col]
+    let grid_width = grid[0].size()
+    let grid_height = grid.size()
+
+    mut score_left_right = 0
+    for row_pos in (col+1)..grid_width {
+        score_left_right++
+        let test_height = grid[row][row_pos]
+        if (test_height >= height) {
+            break
+        }
+    }
+
+    mut score_right_left = 0
+    for row_pos in col..0 {
+        score_right_left++
+        let test_height = grid[row][row_pos-1]
+        if (test_height >= height) {
+            break
+        }
+    }
+
+    mut score_top_bottom = 0
+    for col_pos in (row+1)..grid_height {
+        score_top_bottom++
+        let test_height = grid[col_pos][col]
+        if (test_height >= height) {
+            break
+        }
+    }
+
+    mut score_bottom_top = 0
+    for col_pos in (row)..0 {
+        score_bottom_top++
+        let test_height = grid[col_pos-1][col]
+        if (test_height >= height) {
+            break
+        }
+    }
+
+    println("lr={} rl={}, tb={} bt={}", score_left_right, score_right_left, score_top_bottom, score_bottom_top)
+    if (score_left_right==0){score_left_right=1}
+    if (score_right_left==0){score_right_left=1}
+    if (score_top_bottom==0){score_top_bottom=1}
+    if (score_bottom_top==0){score_bottom_top=1}
+    return score_left_right * score_right_left * score_top_bottom * score_bottom_top
+}
+
+function main() {
+    //let lines = util::read_file_to_list(file_path: "day8_test.txt")
+    let lines = util::read_file_to_list(file_path: "day8_input.txt")
+
+    mut grid:[[u8]] = []
+
+    for line in lines {
+        let chars = util::split_string_to_digits(str: line)
+        grid.push(chars)
+    }
+
+    let num_rows = grid.size()
+    let num_cols = grid[0].size()
+
+    // Part 1
+    // mut visible_trees = 0
+    // for row in 0..num_rows {
+    //     for col in 0..num_cols {
+    //         if (square_visible_from_sides(grid: grid, row: row, col: col)) {
+    //             print("x")
+    //             visible_trees++
+    //         } else {
+    //             print(".")
+    //         }
+    //     }
+    //     println("")
+    // }
+    
+    // println("visible trees {}", visible_trees)
+
+
+    // Part 2
+    mut best_score:usize = 0
+    mut best_col:usize = 0
+    mut best_row:usize = 0
+    for row in 0..num_rows {
+        for col in 0..num_cols {
+            let score = calculate_scenic_score(grid:grid, row: row, col: col)
+            if (score > best_score) {
+                best_score = score
+                best_col = col
+                best_row = row
+            }
+        }
+    }
+
+    println("best_score={} row={} col={}", best_score, best_row, best_col)
+}
